@@ -36,6 +36,7 @@ def get_data(dataset_name, statistics_type):
     sparql.setQuery(query)
     results = sparql.query().convert()
     data = {
+        "dataset": [],
         "metadata": [],
         "hasDocWeight": [],
         "maximum": [],
@@ -51,6 +52,7 @@ def get_data(dataset_name, statistics_type):
                 data[key].append(result[key]["value"])
             else:
                 data[key].append(None)
+    data["dataset"] = [dataset_name] * len(data["metadata"])
     return pd.DataFrame(data)
 
 
@@ -74,9 +76,10 @@ def main():
     dir_to_save = f"datasets/{statistics}"
     if not os.path.exists(dir_to_save):
         os.makedirs(dir_to_save)
-    for dataset in datasets:
-        dataframe = get_data(dataset, statistics)
-        dataframe.to_csv(f"{dir_to_save}/{dataset}.csv", index=False)
+    dataframe = get_data(datasets[0], statistics)
+    for dataset in datasets[1:]:
+        dataframe = pd.concat([dataframe, get_data(dataset, statistics)])
+    dataframe.to_csv(f"{dir_to_save}/all_datasets.csv", index=False)
 
 
 if __name__ == "__main__":
