@@ -106,5 +106,5 @@ def __get_stats_for_each_dataset(dataframe, datasets, categories, statistic):
                 ),
                 statistic,
             ].iloc[0]
-            datasets_radar_stats[i].append(val)
+            datasets_radar_stats[i].append(np.nan_to_num(val))
     return datasets_radar_stats
