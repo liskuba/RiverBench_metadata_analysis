@@ -27,6 +27,15 @@ def generate_radar_plot(path_to_csv):
         ["assist-iot-weather", "politiquices"],
     )
 
+    #TODO https://discuss.streamlit.io/t/multiselect-options-have-truncated-names-set-width/31537/3
+    st.markdown("""
+        <style>
+            .stMultiSelect [data-baseweb=select] span{
+                max-width: 250px;
+                font-size: 0.6rem;
+            }
+        </style>
+        """, unsafe_allow_html=True)
     categories = st.multiselect(
         "Metadata",
         [
@@ -88,7 +97,7 @@ def generate_radar_plot(path_to_csv):
         )
 
     fig.update_layout(
-        polar=dict(radialaxis=dict(visible=True, range=[0, 1])), showlegend=False
+        polar=dict(radialaxis=dict(visible=True, range=[0, 1])), showlegend=True
     )
 
     st.write(fig)
