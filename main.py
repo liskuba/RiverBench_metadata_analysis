@@ -1,3 +1,5 @@
+# TODO: TEN PLIK BEDZIE DO USUNIECIA
+
 import os
 
 import pandas as pd
@@ -125,7 +127,8 @@ def main():
     dataframe.to_csv(f"{dir_to_save}/all_datasets.csv", index=False)
     for dataset in datasets:
         print(dataset)
-        get_eurovoc_themes(dataset, "skos:related+")
+        for i in range(4):
+            get_eurovoc_themes(dataset, f"skos:related{'{'}{i}{'}'}")
         print()
 
 
