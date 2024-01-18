@@ -6,54 +6,41 @@ import streamlit as st
 
 def generate_radar_plot(path_to_csv):
     df = pd.read_csv(path_to_csv)
+    all_datasets = df["dataset"].unique().tolist()
 
-    # TODO: automate including all datasets (e.g. from dataframe)
     datasets = st.multiselect(
         "Datasets",
-        [
-            "assist-iot-weather",
-            "assist-iot-weather-graphs",
-            "citypulse-traffic-graphs",
-            "citypulse-traffic",
-            "dbpedia-live",
-            "digital-agenda-indicators",
-            "linked-spending",
-            "lod-katrina",
-            "muziekweb",
-            "nanopubs",
-            "politiquices",
-            "yago-annotated-facts",
-        ],
-        ["assist-iot-weather", "politiquices"],
+        all_datasets,
+        all_datasets[:3],
     )
 
     categories = st.multiselect(
         "Metadata",
         [
-            "SimpleLiteralCountStatistics",
-            "IriCountStatistics",
-            "ObjectCountStatistics",
-            "GraphCountStatistics",
-            "SubjectCountStatistics",
-            "DatatypeLiteralCountStatistics",
-            "BlankNodeCountStatistics",
-            "LanguageLiteralCountStatistics",
-            "QuotedTripleCountStatistics",
-            "StatementCountStatistics",
-            "LiteralCountStatistics",
-            "PredicateCountStatistics",
+            "SimpleLiteralCount",
+            "IriCount",
+            "ObjectCount",
+            "GraphCount",
+            "SubjectCount",
+            "DatatypeLiteralCount",
+            "BlankNodeCount",
+            "LanguageLiteralCount",
+            "QuotedTripleCount",
+            "StatementCount",
+            "LiteralCount",
+            "PredicateCount",
         ],
         [
-            "LanguageLiteralCountStatistics",
-            "GraphCountStatistics",
-            "BlankNodeCountStatistics",
-            "LiteralCountStatistics",
-            "SimpleLiteralCountStatistics",
+            "LanguageLiteralCount",
+            "GraphCount",
+            "BlankNodeCount",
+            "LiteralCount",
+            "SimpleLiteralCount",
         ],
     )
 
     categories = [
-        "https://w3id.org/riverbench/schema/metadata#" + category
+        "https://w3id.org/riverbench/schema/metadata#" + category + "Statistics"
         for category in categories
     ]
 
