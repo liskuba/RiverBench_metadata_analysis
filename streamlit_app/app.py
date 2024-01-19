@@ -1,8 +1,3 @@
-# import radar_plot
-#
-# path_to_radar_csv = f"streamlit_app/data/dev#statistics-full_all_datasets.csv"
-#
-# radar_plot.generate_radar_plot(path_to_radar_csv)
 import os
 
 import numpy as np
@@ -86,14 +81,11 @@ links = {
     'politiquices': "[politiquices](https://riverbench.github.io/datasets/politiquices/dev/)",
     'yago-annotated-facts': "[yago-annotated-facts](https://riverbench.github.io/datasets/yago-annotated-facts/dev/)"
 }
-# def on_change(key):
-#     selection = st.session_state[key]
-#     st.write(f"Selection changed to {selection}")
-
 
 selected_tab = option_menu(
     None,
-    ["RadarPlot", "BarPlot", "LinePlot", "EuroVoc"],  # "BoxPlot",
+    ["RadarPlot", "BarPlot", "LinePlot", "EuroVoc"],
+    # "BoxPlot", plotly graph objects turned out to have limitations in terms of displaying boxplots from precomupted values
     icons=["radar", "bar-chart", "graph-up", "balloon"],  # , "box"
     key="menu",
     orientation="horizontal",
@@ -111,37 +103,29 @@ for dataset in datasets:
 
 st.write(links_to_display)
 
-# if 'metadata_single' not in st.session_state:
-#     st.session_state['metadata_single'] = df["metadata"].unique().tolist()[1]
-# else:
-#     metadata_single = st.session_state['metadata_single']
-
 if selected_tab == "RadarPlot" or selected_tab == "BarPlot":
     stateful_multi = df["metadata"].unique().tolist()[:5] if "metadata_multi" not in st.session_state else \
-    st.session_state["metadata_multi"]
+        st.session_state["metadata_multi"]
 
     metadata_multi = st.multiselect(
         "Metadata",
         df["metadata"].unique().tolist(),
-        stateful_multi,
+        df["metadata"].unique().tolist()[:5]  # stateful_multi,
     )
     st.session_state["metadata_multi"] = metadata_multi
 
 
+
 elif selected_tab == 'LinePlot' or selected_tab == 'BoxPlot':
-    stateful_index = (
-        0
-        if "metadata_single" not in st.session_state
-        else st.session_state["metadata_single"]
-    )
+    if 'metadata_single' not in st.session_state:
+        st.session_state['metadata_single'] = 0
+
     metadata_single = st.selectbox(
         "Metadata",
         df["metadata"].unique().tolist(),
-        index=stateful_index,
+        index=0  # st.session_state["metadata_single"],
     )
-    st.session_state["metadata_single"] = (
-        df["metadata"].unique().tolist().index(metadata_single)
-    )
+    st.session_state["metadata_single"] = df["metadata"].unique().tolist().index(metadata_single)
 
 if selected_tab != 'EuroVoc':
     metric = st.selectbox(
@@ -163,7 +147,5 @@ elif selected_tab == "BarPlot":
     generate_bar_plot(df, datasets, metadata_multi, metric)
 elif selected_tab == "LinePlot":
     generate_line_plot(df, datasets, metadata_single, metric)
-# elif selected_tab == "BoxPlot":
-#     generate_box_plot(df, datasets, metadata_single, metric)
 elif selected_tab == "EuroVoc":
     generate_eurovoc_themes_visualization(G, themes, avg_shortest_paths, datasets)
