@@ -4,61 +4,18 @@ import plotly.graph_objects as go
 import streamlit as st
 
 
-def generate_radar_plot(path_to_csv):
-    df = pd.read_csv(path_to_csv)
-    all_datasets = df["dataset"].unique().tolist()
-
-    datasets = st.multiselect(
-        "Datasets",
-        all_datasets,
-        all_datasets[:3],
-    )
-
-    categories = st.multiselect(
-        "Metadata",
-        [
-            "SimpleLiteralCount",
-            "IriCount",
-            "ObjectCount",
-            "GraphCount",
-            "SubjectCount",
-            "DatatypeLiteralCount",
-            "BlankNodeCount",
-            "LanguageLiteralCount",
-            "QuotedTripleCount",
-            "StatementCount",
-            "LiteralCount",
-            "PredicateCount",
-        ],
-        [
-            "LanguageLiteralCount",
-            "GraphCount",
-            "BlankNodeCount",
-            "LiteralCount",
-            "SimpleLiteralCount",
-        ],
-    )
-
-    categories = [
-        "https://w3id.org/riverbench/schema/metadata#" + category + "Statistics"
-        for category in categories
-    ]
-
-    statistic = st.selectbox(
-        "Statistic",
-        ("maximum", "mean", "minimum", "standardDeviation", "sum", "uniqueCount"),
-        index=1,
-    )
+def generate_radar_plot(df, datasets, metadata, metric):
+    df = df[(df.stream_size == 'full') & (df.stream_type == 'stream')]
 
     datasets_radar_stats = __get_stats_for_each_dataset(
-        df, datasets, categories, statistic
+        df, datasets, metadata, metric
     )
 
     ranges = np.max(np.array(datasets_radar_stats), axis=0) * 1.2
     ranges = list(map(lambda x: int(x + 1), ranges))
 
-    categories = [
-        f"{categories[i].split('#')[-1]} ({ranges[i]})" for i in range(len(categories))
+    metadata = [
+        f"{metadata[i]} ({ranges[i]})" for i in range(len(metadata))
     ]
 
     fig = go.Figure()
@@ -70,26 +27,26 @@ def generate_radar_plot(path_to_csv):
         ]
         fig.add_trace(
             go.Scatterpolar(
-                r=dataset_radar_stats, theta=categories, fill="toself", name=datasets[i]
+                r=dataset_radar_stats, theta=metadata, fill="toself", name=datasets[i]
             )
         )
 
     fig.update_layout(
-        polar=dict(radialaxis=dict(visible=True, range=[0, 1])), showlegend=False
+        polar=dict(radialaxis=dict(visible=True, range=[0, 1])), showlegend=True
     )
 
     st.write(fig)
 
 
-def __get_stats_for_each_dataset(dataframe, datasets, categories, statistic):
+def __get_stats_for_each_dataset(df, datasets, metadata, statistic):
     datasets_radar_stats = []
     for i in range(len(datasets)):
         datasets_radar_stats.append([])
-        for j in range(len(categories)):
-            val = dataframe.loc[
+        for j in range(len(metadata)):
+            val = df.loc[
                 (
-                    (dataframe["dataset"] == datasets[i])
-                    & (dataframe["metadata"] == categories[j])
+                        (df["dataset"] == datasets[i])
+                        & (df["metadata"] == metadata[j])
                 ),
                 statistic,
             ].iloc[0]
