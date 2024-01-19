@@ -1,9 +1,8 @@
 import os
 
 import pandas as pd
-from SPARQLWrapper import SPARQLWrapper, JSON
-
 from constants import PREFIXES, RADAR_STATISTICS
+from SPARQLWrapper import JSON, SPARQLWrapper
 
 
 def get_data(dataset_name, statistics_type):
