@@ -34,8 +34,13 @@ def generate_radar_plot(df, datasets, metadata, metric):
     fig.update_layout(
         polar=dict(radialaxis=dict(visible=True, range=[0, 1])), showlegend=True
     )
+    fig.update_layout(
+        title="Normalized Values of Selected Metric for Selected Datasets and Metadata Info given Full Dataset",
+        legend_title="Metadata",
+    )
 
     st.write(fig)
+    st.write('*values in brackets show maximum value of given metadata statistic*')
 
 
 def __get_stats_for_each_dataset(df, datasets, metadata, statistic):
