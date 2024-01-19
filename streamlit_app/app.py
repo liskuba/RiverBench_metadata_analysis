@@ -72,6 +72,20 @@ def load_eurovoc():
 df = load_metadata()
 G, themes, avg_shortest_paths = load_eurovoc()
 
+links = {
+    'assist-iot-weather': "[assist-iot-weather](https://riverbench.github.io/datasets/assist-iot-weather/dev/)",
+    'assist-iot-weather-graphs': "[assist-iot-weather-graphs](https://riverbench.github.io/datasets/assist-iot-weather-graphs/dev/)",
+    'citypulse-traffic': "[citypulse-traffic](https://riverbench.github.io/datasets/citypulse-traffic/dev/)",
+    'citypulse-traffic-graphs': "[citypulse-traffic-graphs](https://riverbench.github.io/datasets/citypulse-traffic-graph/dev/)",
+    'dbpedia-live': "[dbpedia-live](https://riverbench.github.io/datasets/dbpedia-live/dev/)",
+    'digital-agenda-indicators': "[digital-agenda-indicators](https://riverbench.github.io/datasets/digital-agenda-indicators/dev/)",
+    'linked-spending': "[linked-spending](https://riverbench.github.io/datasets/linked-spending/dev/)",
+    'lod-katrina': "[lod-katrina](https://riverbench.github.io/datasets/lod-katrina/dev/)",
+    'muziekweb': "[muziekweb](https://riverbench.github.io/datasets/muziekweb/dev/)",
+    'nanopubs': "[nanopubs](https://riverbench.github.io/datasets/nanopubs/dev/)",
+    'politiquices': "[politiquices](https://riverbench.github.io/datasets/politiquices/dev/)",
+    'yago-annotated-facts': "[yago-annotated-facts](https://riverbench.github.io/datasets/yago-annotated-facts/dev/)"
+}
 # def on_change(key):
 #     selection = st.session_state[key]
 #     st.write(f"Selection changed to {selection}")
@@ -79,8 +93,8 @@ G, themes, avg_shortest_paths = load_eurovoc()
 
 selected_tab = option_menu(
     None,
-    ["RadarPlot", "BarPlot", "LinePlot", "BoxPlot", "EuroVoc"],
-    icons=["radar", "bar-chart", "graph-up", "box", "balloon"],
+    ["RadarPlot", "BarPlot", "LinePlot", "EuroVoc"],  # "BoxPlot",
+    icons=["radar", "bar-chart", "graph-up", "balloon"],  # , "box"
     key="menu",
     orientation="horizontal",
 )  # on_change=on_change
@@ -88,8 +102,14 @@ selected_tab = option_menu(
 datasets = st.multiselect(
     "Datasets",
     df["dataset"].unique().tolist(),
-    df["dataset"].unique().tolist()[:4],
+    [df["dataset"].unique().tolist()[i] for i in [0, 2, 4, 5]],
 )
+
+links_to_display = ''
+for dataset in datasets:
+    links_to_display += links[dataset] + ' '
+
+st.write(links_to_display)
 
 # if 'metadata_single' not in st.session_state:
 #     st.session_state['metadata_single'] = df["metadata"].unique().tolist()[1]
@@ -97,13 +117,18 @@ datasets = st.multiselect(
 #     metadata_single = st.session_state['metadata_single']
 
 if selected_tab == "RadarPlot" or selected_tab == "BarPlot":
+    stateful_multi = df["metadata"].unique().tolist()[:5] if "metadata_multi" not in st.session_state else \
+    st.session_state["metadata_multi"]
+
     metadata_multi = st.multiselect(
         "Metadata",
         df["metadata"].unique().tolist(),
-        df["metadata"].unique().tolist()[:5],
+        stateful_multi,
     )
+    st.session_state["metadata_multi"] = metadata_multi
 
-else:
+
+elif selected_tab == 'LinePlot' or selected_tab == 'BoxPlot':
     stateful_index = (
         0
         if "metadata_single" not in st.session_state
@@ -118,18 +143,19 @@ else:
         df["metadata"].unique().tolist().index(metadata_single)
     )
 
-metric = st.selectbox(
-    "Metric",
-    (
-        "maximum",
-        "mean",
-        "minimum",
-        "standardDeviation",
-        "sum",
-        "uniqueCount",
-    ),  # df["metadata"].unique().tolist(),
-    index=1,
-)
+if selected_tab != 'EuroVoc':
+    metric = st.selectbox(
+        "Metric",
+        (
+            "maximum",
+            "mean",
+            "minimum",
+            "standardDeviation",
+            "sum",
+            "uniqueCount",
+        ),  # df["metadata"].unique().tolist(),
+        index=1,
+    )
 
 if selected_tab == "RadarPlot":
     generate_radar_plot(df, datasets, metadata_multi, metric)
@@ -137,13 +163,7 @@ elif selected_tab == "BarPlot":
     generate_bar_plot(df, datasets, metadata_multi, metric)
 elif selected_tab == "LinePlot":
     generate_line_plot(df, datasets, metadata_single, metric)
-elif selected_tab == "BoxPlot":
-    generate_box_plot(df, datasets, metadata_single, metric)
-    # generate_bar_plot()
+# elif selected_tab == "BoxPlot":
+#     generate_box_plot(df, datasets, metadata_single, metric)
 elif selected_tab == "EuroVoc":
     generate_eurovoc_themes_visualization(G, themes, avg_shortest_paths, datasets)
-
-# if selected == "RadarPlot":
-#     st.write("home is where the heart is")
-# else:
-#     st.write("settings is my bettings")

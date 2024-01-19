@@ -17,7 +17,12 @@ def generate_bar_plot(df, datasets, metadata, metric):
 
     fig = go.Figure(data=data)
 
-    # Change the bar mode
-    fig.update_layout(barmode='group')
+    fig.update_layout(
+        barmode='group',
+        title="Value of Selected Metric for Selected Datasets and Metadata Info given Full Dataset",
+        xaxis_title="Datasets",
+        yaxis_title="Metric Value",
+        legend_title="Metadata",
+    )
 
     st.write(fig)
