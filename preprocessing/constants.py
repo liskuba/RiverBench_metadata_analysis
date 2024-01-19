@@ -37,3 +37,7 @@ PREFIXES = """
 URL_EUROVOC = f"http://localhost:3030/{EUROVOC_JENA}/query"
 
 EUROVOC_GRAPH_FILEPATH = "../streamlit_app/data/graph_with_eurovoc_themes.pickle"
+
+DATASETS_THEMES_FILEPATH = "../streamlit_app/data/themes.json"
+
+AVG_SHORTEST_PATH_FILEPATH = "../streamlit_app/data/avg_shortest_path.csv"
